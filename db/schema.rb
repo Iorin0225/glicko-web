@@ -29,6 +29,12 @@ ActiveRecord::Schema.define(version: 20_200_228_014_909) do
     t.string 'name', null: false
     t.string 'key', null: false
     t.string 'icon_url', null: false
+    t.float 'glicko_rating', default: 0.0, null: false
+    t.float 'glicko_deviation', default: 0.0, null: false
+    t.float 'glicko_volarity', default: 0.0, null: false
+    t.integer 'win_count', default: 0, null: false
+    t.integer 'lose_count', default: 0, null: false
+    t.integer 'draw_count', default: 0, null: false
     t.datetime 'created_at', precision: 6, null: false
     t.datetime 'updated_at', precision: 6, null: false
   end
