@@ -1,9 +1,50 @@
 # frozen_string_literal: true
 
 class CalculateGlickoForNbaTeams
+  # ActiveRecord::Base.logger = nil
+
   def initialize; end
 
-  def perform
+  def calc_per_season
+    NbaTeam.initialize_rating
+
+    team_objs = {}
+    NbaTeam.find_each do |nba_team|
+      team_objs[nba_team.key.to_sym] = nba_team.rating
+    end
+    period = Glicko2::RatingPeriod.from_objs(team_objs)
+
+    NbaGameResult.order(:game_at).each do |nba_game_result|
+      team_a = nba_game_result.team_a
+      team_b = nba_game_result.team_b
+
+      period.game(
+        [team_a.key, team_b.key],
+        [-1 * nba_game_result.score_a, -1 * nba_game_result.score_b]
+      )
+
+      period = period.generate_next(0.5)
+      period.players.each(&:update_obj)
+
+      puts "#{team_a.key}(#{nba_game_result.score_a}) VS #{team_b.key}(#{nba_game_result.score_b})"
+
+      nba_game_result.apply_team_score
+    end
+
+    # Output updated Glicko ratings
+    period.players.each do |player|
+      NbaTeam.where(key: player.key).update_all(
+        glicko_rating: player.obj.rating,
+        glicko_deviation: player.obj.rating_deviation,
+        glicko_volarity: player.obj.volatility
+      )
+    end
+
+    puts 'done'
+    true
+  end
+
+  def calc_per_1_game
     NbaTeam.initialize_rating
 
     NbaGameResult.order(:game_at).each do |nba_game_result|
@@ -45,6 +86,6 @@ class CalculateGlickoForNbaTeams
     end
 
     puts 'done'
-    return true
+    true
   end
 end

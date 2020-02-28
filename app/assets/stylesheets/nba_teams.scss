@@ -1,0 +1,26 @@
+// Place all the styles related to the nba_teams controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+body {
+font-family: Helvetica Neue, Helvetica, Hiragino Sans, 'ヒラギノ角ゴ ProN W3', Hiragino Kaku Gothic ProN, "メイリオ", Meiryo, sans-serif;
+color: #333;
+}
+
+.container {
+  background: #eee;
+}
+
+.team-score-table {
+
+  &__team-logo {
+    height: 2rem;
+    image {
+      width: 100%;
+    }
+  }
+
+  &__row {
+    vertical-align: middle !important;
+  }
+}
