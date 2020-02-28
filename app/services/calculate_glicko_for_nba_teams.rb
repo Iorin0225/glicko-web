@@ -27,6 +27,17 @@ class CalculateGlickoForNbaTeams
       period.players.each(&:update_obj)
 
       puts "#{team_a.key}(#{nba_game_result.score_a}) VS #{team_b.key}(#{nba_game_result.score_b})"
+      puts "#{team_a.key}: #{period.player(team_a.key.to_sym).obj.rating}"
+      puts "#{team_b.key}: #{period.player(team_b.key.to_sym).obj.rating}"
+      # if team_a.key == 'TOR' || team_b.key == 'TOR'
+      #   puts "#{team_a.key}(#{nba_game_result.score_a}) VS #{team_b.key}(#{nba_game_result.score_b})"
+      # end
+      # if team_a.key == 'TOR'
+      #   puts "#{team_a.key}: #{period.player(team_a.key.to_sym).obj.rating}"
+      # end
+      # if team_b.key == 'TOR'
+      #   puts "#{team_b.key}: #{period.player(team_b.key.to_sym).obj.rating}"
+      # end
 
       nba_game_result.apply_team_score
     end

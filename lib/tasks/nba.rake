@@ -16,7 +16,7 @@ namespace :nba do
   end
 
   def setup_nba_teams
-    puts 'Inputting Normal season scores...'
+    puts 'Inputting teams data...'
     create(:nba_team, name: 'Boston Celtics', key: 'BOS', icon_url: 'https://stats.nba.com/media/img/teams/logos/BOS_logo.svg')
     create(:nba_team, name: 'Brooklyn Nets', key: 'BKN', icon_url: 'https://stats.nba.com/media/img/teams/logos/BKN_logo.svg')
     create(:nba_team, name: 'New York Knicks', key: 'NYK', icon_url: 'https://stats.nba.com/media/img/teams/logos/NYK_logo.svg')
@@ -50,6 +50,31 @@ namespace :nba do
   end
 
   def setup_nba_game_results
+    create_normal_season_data
+    create_play_off_data
+
+    puts 'Initialize the rating of all teams...'
+    NbaTeam.initialize_rating
+
+    puts "Done. (#{NbaGameResult.count} games.)"
+  end
+
+  def create_nba_game_result(team_a_name:, score_a:, team_b_name:, score_b:, game_at:)
+    team_a = NbaTeam.find_by(name: team_a_name)
+    puts "Unknow Team name: #{team_a_name}" && return if team_a.nil?
+    team_b = NbaTeam.find_by(name: team_b_name)
+    puts "Unknow Team name: #{team_b_name}" && return if team_b.nil?
+
+    create(:nba_game_result,
+           team_a: team_a,
+           score_a: score_a,
+           team_b: team_b,
+           score_b: score_b,
+           game_at: game_at)
+  end
+
+  def create_normal_season_data
+    puts 'Inputting Normal season scores...'
     create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 105, team_b_name: 'Philadelphia 76ers', score_b: 87, game_at: '2018/10/17 09:00')
     create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 108, team_b_name: 'Oklahoma City Thunder', score_b: 100, game_at: '2018/10/17 11:30')
     create_nba_game_result(team_a_name: 'Charlotte Hornets', score_a: 112, team_b_name: 'Milwaukee Bucks', score_b: 113, game_at: '2018/10/18 08:00')
@@ -1280,109 +1305,91 @@ namespace :nba do
     create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 99, team_b_name: 'Minnesota Timberwolves', score_b: 95, game_at: '2019/04/11 11:30')
     create_nba_game_result(team_a_name: 'LA Clippers', score_a: 143, team_b_name: 'Utah Jazz', score_b: 137, game_at: '2019/04/11 11:30')
     create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 136, team_b_name: 'Sacramento Kings', score_b: 131, game_at: '2019/04/11 11:30')
-
-    # Playoff
-    # puts 'Inputting Play-off season scores'
-    # create_nba_game_result(team_a_name: 'Brooklyn Nets', score_a: 111, team_b_name: 'Philadelphia 76ers', score_b:102, game_at: '2019/04/13 14:30')
-    # create_nba_game_result(team_a_name: 'Orlando Magic', score_a: 104, team_b_name: 'Toronto Raptors', score_b:101, game_at: '2019/04/13 17:00')
-    # create_nba_game_result(team_a_name: 'Los Angeles Clippers', score_a: 104, team_b_name: 'Golden State Warriors', score_b:121, game_at: '2019/04/13 20:00')
-    # create_nba_game_result(team_a_name: 'San Antonio Spurs', score_a: 101, team_b_name: 'Denver Nuggets', score_b:96, game_at: '2019/04/13 22:30')
-    # create_nba_game_result(team_a_name: 'Indiana Pacers', score_a: 74, team_b_name: 'Boston Celtics', score_b:84, game_at: '2019/04/14 13:00')
-    # create_nba_game_result(team_a_name: 'Oklahoma City Thunder', score_a: 99, team_b_name: 'Portland Trail Blazers', score_b:104, game_at: '2019/04/14 15:30')
-    # create_nba_game_result(team_a_name: 'Detroit Pistons', score_a: 86, team_b_name: 'Milwaukee Bucks', score_b:121, game_at: '2019/04/14 19:00')
-    # create_nba_game_result(team_a_name: 'Utah Jazz', score_a: 90, team_b_name: 'Houston Rockets', score_b:122, game_at: '2019/04/14 21:30')
-    # create_nba_game_result(team_a_name: 'Brooklyn Nets', score_a: 123, team_b_name: 'Philadelphia 76ers', score_b:145, game_at: '2019/04/15 20:00')
-    # create_nba_game_result(team_a_name: 'Los Angeles Clippers', score_a: 135, team_b_name: 'Golden State Warriors', score_b:131, game_at: '2019/04/15 22:30')
-    # create_nba_game_result(team_a_name: 'Orlando Magic', score_a: 82, team_b_name: 'Toronto Raptors', score_b:111, game_at: '2019/04/16 20:00')
-    # create_nba_game_result(team_a_name: 'San Antonio Spurs', score_a: 105, team_b_name: 'Denver Nuggets', score_b:114, game_at: '2019/04/16 21:00')
-    # create_nba_game_result(team_a_name: 'Oklahoma City Thunder', score_a: 94, team_b_name: 'Portland Trail Blazers', score_b:114, game_at: '2019/04/16 22:30')
-    # create_nba_game_result(team_a_name: 'Indiana Pacers', score_a: 91, team_b_name: 'Boston Celtics', score_b:99, game_at: '2019/04/17 19:00')
-    # create_nba_game_result(team_a_name: 'Detroit Pistons', score_a: 99, team_b_name: 'Milwaukee Bucks', score_b:120, game_at: '2019/04/17 20:00')
-    # create_nba_game_result(team_a_name: 'Utah Jazz', score_a: 98, team_b_name: 'Houston Rockets', score_b:118, game_at: '2019/04/17 21:30')
-    # create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 131, team_b_name: 'Brooklyn Nets', score_b:115, game_at: '2019/04/18 20:00')
-    # create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 108, team_b_name: 'San Antonio Spurs', score_b:118, game_at: '2019/04/18 21:00')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 132, team_b_name: 'Los Angeles Clippers', score_b:105, game_at: '2019/04/18 22:30')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 98, team_b_name: 'Orlando Magic', score_b:93, game_at: '2019/04/19 19:00')
-    # create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 104, team_b_name: 'Indiana Pacers', score_b:96, game_at: '2019/04/19 20:30')
-    # create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 108, team_b_name: 'Oklahoma City Thunder', score_b:120, game_at: '2019/04/19 21:30')
-    # create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 112, team_b_name: 'Brooklyn Nets', score_b:108, game_at: '2019/04/20 15:00')
-    # create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 117, team_b_name: 'San Antonio Spurs', score_b:103, game_at: '2019/04/20 17:30')
-    # create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 119, team_b_name: 'Detroit Pistons', score_b:103, game_at: '2019/04/20 20:00')
-    # create_nba_game_result(team_a_name: 'Houston Rockets', score_a: 104, team_b_name: 'Utah Jazz', score_b:101, game_at: '2019/04/20 22:30')
-    # create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 110, team_b_name: 'Indiana Pacers', score_b:106, game_at: '2019/04/21 13:00')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 113, team_b_name: 'Los Angeles Clippers', score_b:105, game_at: '2019/04/21 15:30')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 107, team_b_name: 'Orlando Magic', score_b:85, game_at: '2019/04/21 19:00')
-    # create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 111, team_b_name: 'Oklahoma City Thunder', score_b:98, game_at: '2019/04/21 21:30')
-    # create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 127, team_b_name: 'Detroit Pistons', score_b:104, game_at: '2019/04/22 20:00')
-    # create_nba_game_result(team_a_name: 'Houston Rockets', score_a: 91, team_b_name: 'Utah Jazz', score_b:107, game_at: '2019/04/22 22:30')
-    # create_nba_game_result(team_a_name: 'Orlando Magic', score_a: 96, team_b_name: 'Toronto Raptors', score_b:115, game_at: '2019/04/23 19:00')
-    # create_nba_game_result(team_a_name: 'Brooklyn Nets', score_a: 100, team_b_name: 'Philadelphia 76ers', score_b:122, game_at: '2019/04/23 20:00')
-    # create_nba_game_result(team_a_name: 'San Antonio Spurs', score_a: 90, team_b_name: 'Denver Nuggets', score_b:108, game_at: '2019/04/23 21:30')
-    # create_nba_game_result(team_a_name: 'Oklahoma City Thunder', score_a: 115, team_b_name: 'Portland Trail Blazers', score_b:118, game_at: '2019/04/23 22:30')
-    # create_nba_game_result(team_a_name: 'Utah Jazz', score_a: 93, team_b_name: 'Houston Rockets', score_b:100, game_at: '2019/04/24 20:00')
-    # create_nba_game_result(team_a_name: 'Los Angeles Clippers', score_a: 129, team_b_name: 'Golden State Warriors', score_b:121, game_at: '2019/04/24 22:30')
-    # create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 103, team_b_name: 'San Antonio Spurs', score_b:120, game_at: '2019/04/25 20:00')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 129, team_b_name: 'Los Angeles Clippers', score_b:110, game_at: '2019/04/26 22:00')
-    # create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 95, team_b_name: 'Toronto Raptors', score_b:108, game_at: '2019/04/27 19:30')
-    # create_nba_game_result(team_a_name: 'San Antonio Spurs', score_a: 86, team_b_name: 'Denver Nuggets', score_b:90, game_at: '2019/04/27 22:00')
-    # create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 112, team_b_name: 'Milwaukee Bucks', score_b:90, game_at: '2019/04/28 13:00')
-    # create_nba_game_result(team_a_name: 'Houston Rockets', score_a: 100, team_b_name: 'Golden State Warriors', score_b:104, game_at: '2019/04/28 15:30')
-    # create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 94, team_b_name: 'Toronto Raptors', score_b:89, game_at: '2019/04/29 20:00')
-    # create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 113, team_b_name: 'Denver Nuggets', score_b:121, game_at: '2019/04/29 22:30')
-    # create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 102, team_b_name: 'Milwaukee Bucks', score_b:123, game_at: '2019/04/30 20:00')
-    # create_nba_game_result(team_a_name: 'Houston Rockets', score_a: 109, team_b_name: 'Golden State Warriors', score_b:115, game_at: '2019/04/30 22:30')
-    # create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 97, team_b_name: 'Denver Nuggets', score_b:90, game_at: '2019/05/01 21:00')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 95, team_b_name: 'Philadelphia 76ers', score_b:116, game_at: '2019/05/02 20:00')
-    # create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 123, team_b_name: 'Boston Celtics', score_b:116, game_at: '2019/05/03 20:00')
-    # create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 137, team_b_name: 'Portland Trail Blazers', score_b:140, game_at: '2019/05/03 22:30')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 121, team_b_name: 'Houston Rockets', score_b:126, game_at: '2019/05/04 20:30')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 101, team_b_name: 'Philadelphia 76ers', score_b:96, game_at: '2019/05/05 15:30')
-    # create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 116, team_b_name: 'Portland Trail Blazers', score_b:112, game_at: '2019/05/05 19:00')
-    # create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 113, team_b_name: 'Boston Celtics', score_b:101, game_at: '2019/05/06 19:00')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 108, team_b_name: 'Houston Rockets', score_b:112, game_at: '2019/05/06 21:30')
-    # create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 89, team_b_name: 'Toronto Raptors', score_b:125, game_at: '2019/05/07 20:00')
-    # create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 98, team_b_name: 'Denver Nuggets', score_b:124, game_at: '2019/05/07 22:30')
-    # create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 91, team_b_name: 'Milwaukee Bucks', score_b:116, game_at: '2019/05/08 20:00')
-    # create_nba_game_result(team_a_name: 'Houston Rockets', score_a: 99, team_b_name: 'Golden State Warriors', score_b:104, game_at: '2019/05/08 22:30')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 101, team_b_name: 'Philadelphia 76ers', score_b:112, game_at: '2019/05/09 20:00')
-    # create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 108, team_b_name: 'Portland Trail Blazers', score_b:119, game_at: '2019/05/09 22:30')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 118, team_b_name: 'Houston Rockets', score_b:113, game_at: '2019/05/10 21:00')
-    # create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 100, team_b_name: 'Denver Nuggets', score_b:96, game_at: '2019/05/12 15:30')
-    # create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 90, team_b_name: 'Toronto Raptors', score_b:92, game_at: '2019/05/12 19:00')
-    # create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 94, team_b_name: 'Golden State Warriors', score_b:116, game_at: '2019/05/14 21:00')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 100, team_b_name: 'Milwaukee Bucks', score_b:108, game_at: '2019/05/15 20:30')
-    # create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 111, team_b_name: 'Golden State Warriors', score_b:114, game_at: '2019/05/16 21:00')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 103, team_b_name: 'Milwaukee Bucks', score_b:125, game_at: '2019/05/17 20:30')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 110, team_b_name: 'Portland Trail Blazers', score_b:99, game_at: '2019/05/18 21:00')
-    # create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 112, team_b_name: 'Toronto Raptors', score_b:118, game_at: '2019/05/19 19:00')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 119, team_b_name: 'Portland Trail Blazers', score_b:117, game_at: '2019/05/20 21:00')
-    # create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 102, team_b_name: 'Toronto Raptors', score_b:120, game_at: '2019/05/21 20:30')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 105, team_b_name: 'Milwaukee Bucks', score_b:99, game_at: '2019/05/23 20:30')
-    # create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 94, team_b_name: 'Toronto Raptors', score_b:100, game_at: '2019/05/25 20:30')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 109, team_b_name: 'Toronto Raptors', score_b:118, game_at: '2019/05/30 21:00')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 109, team_b_name: 'Toronto Raptors', score_b:104, game_at: '2019/06/02 20:00')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 123, team_b_name: 'Golden State Warriors', score_b:109, game_at: '2019/06/05 21:00')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 105, team_b_name: 'Golden State Warriors', score_b:92, game_at: '2019/06/07 21:00')
-    # create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 106, team_b_name: 'Toronto Raptors', score_b:105, game_at: '2019/06/10 21:00')
-    # create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 114, team_b_name: 'Golden State Warriors', score_b:110, game_at: '2019/06/13 21:00')
-
-    puts 'Initialize the rating of all teams...'
-    NbaTeam.initialize_rating
-
-    puts "Done. (#{NbaGameResult.count} games.)"
   end
 
-  def create_nba_game_result(team_a_name:, score_a:, team_b_name:, score_b:, game_at:)
-    team_a = NbaTeam.find_by(name: team_a_name)
-    puts "Unknow Team name: #{team_a_name}" && return if team_a.nil?
-    team_b = NbaTeam.find_by(name: team_b_name)
-    puts "Unknow Team name: #{team_b_name}" && return if team_b.nil?
-
-    create(:nba_game_result,
-           team_a: team_a,
-           score_a: score_a,
-           team_b: team_b,
-           score_b: score_b,
-           game_at: game_at)
+  def create_play_off_data
+    puts 'Inputting Play-off season scores'
+    create_nba_game_result(team_a_name: 'Brooklyn Nets', score_a: 111, team_b_name: 'Philadelphia 76ers', score_b: 102, game_at: '2019/04/13 14:30')
+    create_nba_game_result(team_a_name: 'Orlando Magic', score_a: 104, team_b_name: 'Toronto Raptors', score_b: 101, game_at: '2019/04/13 17:00')
+    create_nba_game_result(team_a_name: 'Los Angeles Clippers', score_a: 104, team_b_name: 'Golden State Warriors', score_b: 121, game_at: '2019/04/13 20:00')
+    create_nba_game_result(team_a_name: 'San Antonio Spurs', score_a: 101, team_b_name: 'Denver Nuggets', score_b: 96, game_at: '2019/04/13 22:30')
+    create_nba_game_result(team_a_name: 'Indiana Pacers', score_a: 74, team_b_name: 'Boston Celtics', score_b: 84, game_at: '2019/04/14 13:00')
+    create_nba_game_result(team_a_name: 'Oklahoma City Thunder', score_a: 99, team_b_name: 'Portland Trail Blazers', score_b: 104, game_at: '2019/04/14 15:30')
+    create_nba_game_result(team_a_name: 'Detroit Pistons', score_a: 86, team_b_name: 'Milwaukee Bucks', score_b: 121, game_at: '2019/04/14 19:00')
+    create_nba_game_result(team_a_name: 'Utah Jazz', score_a: 90, team_b_name: 'Houston Rockets', score_b: 122, game_at: '2019/04/14 21:30')
+    create_nba_game_result(team_a_name: 'Brooklyn Nets', score_a: 123, team_b_name: 'Philadelphia 76ers', score_b: 145, game_at: '2019/04/15 20:00')
+    create_nba_game_result(team_a_name: 'Los Angeles Clippers', score_a: 135, team_b_name: 'Golden State Warriors', score_b: 131, game_at: '2019/04/15 22:30')
+    create_nba_game_result(team_a_name: 'Orlando Magic', score_a: 82, team_b_name: 'Toronto Raptors', score_b: 111, game_at: '2019/04/16 20:00')
+    create_nba_game_result(team_a_name: 'San Antonio Spurs', score_a: 105, team_b_name: 'Denver Nuggets', score_b: 114, game_at: '2019/04/16 21:00')
+    create_nba_game_result(team_a_name: 'Oklahoma City Thunder', score_a: 94, team_b_name: 'Portland Trail Blazers', score_b: 114, game_at: '2019/04/16 22:30')
+    create_nba_game_result(team_a_name: 'Indiana Pacers', score_a: 91, team_b_name: 'Boston Celtics', score_b: 99, game_at: '2019/04/17 19:00')
+    create_nba_game_result(team_a_name: 'Detroit Pistons', score_a: 99, team_b_name: 'Milwaukee Bucks', score_b: 120, game_at: '2019/04/17 20:00')
+    create_nba_game_result(team_a_name: 'Utah Jazz', score_a: 98, team_b_name: 'Houston Rockets', score_b: 118, game_at: '2019/04/17 21:30')
+    create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 131, team_b_name: 'Brooklyn Nets', score_b: 115, game_at: '2019/04/18 20:00')
+    create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 108, team_b_name: 'San Antonio Spurs', score_b: 118, game_at: '2019/04/18 21:00')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 132, team_b_name: 'Los Angeles Clippers', score_b: 105, game_at: '2019/04/18 22:30')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 98, team_b_name: 'Orlando Magic', score_b: 93, game_at: '2019/04/19 19:00')
+    create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 104, team_b_name: 'Indiana Pacers', score_b: 96, game_at: '2019/04/19 20:30')
+    create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 108, team_b_name: 'Oklahoma City Thunder', score_b: 120, game_at: '2019/04/19 21:30')
+    create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 112, team_b_name: 'Brooklyn Nets', score_b: 108, game_at: '2019/04/20 15:00')
+    create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 117, team_b_name: 'San Antonio Spurs', score_b: 103, game_at: '2019/04/20 17:30')
+    create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 119, team_b_name: 'Detroit Pistons', score_b: 103, game_at: '2019/04/20 20:00')
+    create_nba_game_result(team_a_name: 'Houston Rockets', score_a: 104, team_b_name: 'Utah Jazz', score_b: 101, game_at: '2019/04/20 22:30')
+    create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 110, team_b_name: 'Indiana Pacers', score_b: 106, game_at: '2019/04/21 13:00')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 113, team_b_name: 'Los Angeles Clippers', score_b: 105, game_at: '2019/04/21 15:30')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 107, team_b_name: 'Orlando Magic', score_b: 85, game_at: '2019/04/21 19:00')
+    create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 111, team_b_name: 'Oklahoma City Thunder', score_b: 98, game_at: '2019/04/21 21:30')
+    create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 127, team_b_name: 'Detroit Pistons', score_b: 104, game_at: '2019/04/22 20:00')
+    create_nba_game_result(team_a_name: 'Houston Rockets', score_a: 91, team_b_name: 'Utah Jazz', score_b: 107, game_at: '2019/04/22 22:30')
+    create_nba_game_result(team_a_name: 'Orlando Magic', score_a: 96, team_b_name: 'Toronto Raptors', score_b: 115, game_at: '2019/04/23 19:00')
+    create_nba_game_result(team_a_name: 'Brooklyn Nets', score_a: 100, team_b_name: 'Philadelphia 76ers', score_b: 122, game_at: '2019/04/23 20:00')
+    create_nba_game_result(team_a_name: 'San Antonio Spurs', score_a: 90, team_b_name: 'Denver Nuggets', score_b: 108, game_at: '2019/04/23 21:30')
+    create_nba_game_result(team_a_name: 'Oklahoma City Thunder', score_a: 115, team_b_name: 'Portland Trail Blazers', score_b: 118, game_at: '2019/04/23 22:30')
+    create_nba_game_result(team_a_name: 'Utah Jazz', score_a: 93, team_b_name: 'Houston Rockets', score_b: 100, game_at: '2019/04/24 20:00')
+    create_nba_game_result(team_a_name: 'Los Angeles Clippers', score_a: 129, team_b_name: 'Golden State Warriors', score_b: 121, game_at: '2019/04/24 22:30')
+    create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 103, team_b_name: 'San Antonio Spurs', score_b: 120, game_at: '2019/04/25 20:00')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 129, team_b_name: 'Los Angeles Clippers', score_b: 110, game_at: '2019/04/26 22:00')
+    create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 95, team_b_name: 'Toronto Raptors', score_b: 108, game_at: '2019/04/27 19:30')
+    create_nba_game_result(team_a_name: 'San Antonio Spurs', score_a: 86, team_b_name: 'Denver Nuggets', score_b: 90, game_at: '2019/04/27 22:00')
+    create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 112, team_b_name: 'Milwaukee Bucks', score_b: 90, game_at: '2019/04/28 13:00')
+    create_nba_game_result(team_a_name: 'Houston Rockets', score_a: 100, team_b_name: 'Golden State Warriors', score_b: 104, game_at: '2019/04/28 15:30')
+    create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 94, team_b_name: 'Toronto Raptors', score_b: 89, game_at: '2019/04/29 20:00')
+    create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 113, team_b_name: 'Denver Nuggets', score_b: 121, game_at: '2019/04/29 22:30')
+    create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 102, team_b_name: 'Milwaukee Bucks', score_b: 123, game_at: '2019/04/30 20:00')
+    create_nba_game_result(team_a_name: 'Houston Rockets', score_a: 109, team_b_name: 'Golden State Warriors', score_b: 115, game_at: '2019/04/30 22:30')
+    create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 97, team_b_name: 'Denver Nuggets', score_b: 90, game_at: '2019/05/01 21:00')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 95, team_b_name: 'Philadelphia 76ers', score_b: 116, game_at: '2019/05/02 20:00')
+    create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 123, team_b_name: 'Boston Celtics', score_b: 116, game_at: '2019/05/03 20:00')
+    create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 137, team_b_name: 'Portland Trail Blazers', score_b: 140, game_at: '2019/05/03 22:30')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 121, team_b_name: 'Houston Rockets', score_b: 126, game_at: '2019/05/04 20:30')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 101, team_b_name: 'Philadelphia 76ers', score_b: 96, game_at: '2019/05/05 15:30')
+    create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 116, team_b_name: 'Portland Trail Blazers', score_b: 112, game_at: '2019/05/05 19:00')
+    create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 113, team_b_name: 'Boston Celtics', score_b: 101, game_at: '2019/05/06 19:00')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 108, team_b_name: 'Houston Rockets', score_b: 112, game_at: '2019/05/06 21:30')
+    create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 89, team_b_name: 'Toronto Raptors', score_b: 125, game_at: '2019/05/07 20:00')
+    create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 98, team_b_name: 'Denver Nuggets', score_b: 124, game_at: '2019/05/07 22:30')
+    create_nba_game_result(team_a_name: 'Boston Celtics', score_a: 91, team_b_name: 'Milwaukee Bucks', score_b: 116, game_at: '2019/05/08 20:00')
+    create_nba_game_result(team_a_name: 'Houston Rockets', score_a: 99, team_b_name: 'Golden State Warriors', score_b: 104, game_at: '2019/05/08 22:30')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 101, team_b_name: 'Philadelphia 76ers', score_b: 112, game_at: '2019/05/09 20:00')
+    create_nba_game_result(team_a_name: 'Denver Nuggets', score_a: 108, team_b_name: 'Portland Trail Blazers', score_b: 119, game_at: '2019/05/09 22:30')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 118, team_b_name: 'Houston Rockets', score_b: 113, game_at: '2019/05/10 21:00')
+    create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 100, team_b_name: 'Denver Nuggets', score_b: 96, game_at: '2019/05/12 15:30')
+    create_nba_game_result(team_a_name: 'Philadelphia 76ers', score_a: 90, team_b_name: 'Toronto Raptors', score_b: 92, game_at: '2019/05/12 19:00')
+    create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 94, team_b_name: 'Golden State Warriors', score_b: 116, game_at: '2019/05/14 21:00')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 100, team_b_name: 'Milwaukee Bucks', score_b: 108, game_at: '2019/05/15 20:30')
+    create_nba_game_result(team_a_name: 'Portland Trail Blazers', score_a: 111, team_b_name: 'Golden State Warriors', score_b: 114, game_at: '2019/05/16 21:00')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 103, team_b_name: 'Milwaukee Bucks', score_b: 125, game_at: '2019/05/17 20:30')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 110, team_b_name: 'Portland Trail Blazers', score_b: 99, game_at: '2019/05/18 21:00')
+    create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 112, team_b_name: 'Toronto Raptors', score_b: 118, game_at: '2019/05/19 19:00')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 119, team_b_name: 'Portland Trail Blazers', score_b: 117, game_at: '2019/05/20 21:00')
+    create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 102, team_b_name: 'Toronto Raptors', score_b: 120, game_at: '2019/05/21 20:30')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 105, team_b_name: 'Milwaukee Bucks', score_b: 99, game_at: '2019/05/23 20:30')
+    create_nba_game_result(team_a_name: 'Milwaukee Bucks', score_a: 94, team_b_name: 'Toronto Raptors', score_b: 100, game_at: '2019/05/25 20:30')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 109, team_b_name: 'Toronto Raptors', score_b: 118, game_at: '2019/05/30 21:00')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 109, team_b_name: 'Toronto Raptors', score_b: 104, game_at: '2019/06/02 20:00')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 123, team_b_name: 'Golden State Warriors', score_b: 109, game_at: '2019/06/05 21:00')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 105, team_b_name: 'Golden State Warriors', score_b: 92, game_at: '2019/06/07 21:00')
+    create_nba_game_result(team_a_name: 'Golden State Warriors', score_a: 106, team_b_name: 'Toronto Raptors', score_b: 105, game_at: '2019/06/10 21:00')
+    create_nba_game_result(team_a_name: 'Toronto Raptors', score_a: 114, team_b_name: 'Golden State Warriors', score_b: 110, game_at: '2019/06/13 21:00')
   end
 end
