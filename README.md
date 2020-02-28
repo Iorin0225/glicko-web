@@ -1,24 +1,17 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## At first...
 
-Things you may want to cover:
+This repository is just for my trial.
 
-* Ruby version
+I would like to try to use glicko rating.
 
-* System dependencies
+## My plan
 
-* Configuration
+I'll show you as below now. (You know, all plan can be changed. So you please do not hope these are sure.)
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- NBA Teams rating
+    + Seasonally
+    + Yearly
+- NBA Player rating
+    + 
