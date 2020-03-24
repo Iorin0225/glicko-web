@@ -51,7 +51,7 @@ namespace :nba do
 
   def setup_nba_game_results
     create_normal_season_data
-    create_play_off_data
+    # create_play_off_data
 
     puts 'Initialize the rating of all teams...'
     NbaTeam.initialize_rating
